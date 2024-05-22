@@ -272,11 +272,19 @@ if (needMoreAmps == true) {
        }
     if (SlowerSwerve == true) {
       //System.out.println("Swerve is Slow");
+<<<<<<< HEAD
       SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.125;//Slower swerve speed
     }
     if(FasterSwerve == false & SlowerSwerve == false){
      //System.out.println("Swerve is Normal 0.5");
       SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.25;//Normal swerve speed
+=======
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.25;//Slower swerve speed
+    }
+    if(FasterSwerve == false & SlowerSwerve == false){
+     //System.out.println("Swerve is Normal 0.5");
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 1.0;//Normal swerve speed
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
       
     }
  }

@@ -341,7 +341,11 @@ public class RobotContainer {
     //         () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
     //     ));
 
+<<<<<<< HEAD
     btn_aim_human_feeder = new JoystickButton(driverJoystick, 9);
+=======
+    btn_aim_human_feeder = new JoystickButton(driverJoystick, 2);
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
     btn_aim_human_feeder.whileTrue(
         new TeleopSwerve(
             m_swerveBase,
@@ -388,8 +392,13 @@ public class RobotContainer {
     // btn_led_win.whileTrue(new LEDWinNo(m_led));
 
     //Buton auto intakes and shootes
+<<<<<<< HEAD
      btn_far_feeder = new JoystickButton(driverJoystick, 2);
     btn_far_feeder.whileTrue(new FeedToShot(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder,m_lineBreak));
+=======
+    //  btn_far_feeder = new JoystickButton(streamdeck, 2);
+    // btn_far_feeder.whileTrue(new FeedToShot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase));
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
   //btn_far_feeder.whileTrue(new Commands.repeatedly(() -> (new FeedToShot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase))));
 
     //Buton mauale

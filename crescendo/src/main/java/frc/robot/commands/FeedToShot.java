@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+<<<<<<< HEAD
 
 
 public class FeedToShot extends Command {
@@ -44,22 +45,51 @@ public class FeedToShot extends Command {
             new HasNote(breakline),
             new ArmPivotFarHumanFeeder(aim),
             new ShootingFarHumanFeeder(shoot)
+=======
+/**
+ * This class is for the 5 Ball Auto Command
+ */
+
+public class FeedToShot extends SequentialCommandGroup {
+   // public class FeedToShot extends repeatingSequenceCommandGroup{
+  public FeedToShot(ShooterSubsystem m_shooter, ArmPivotSubsystem m_ArmPivotSubsystem,
+      IntakeSubsystem m_intake, ShooterFeederSubsystem m_shooterFeeder,SwerveBase m_swerveBase,LineBreak m_lineBreak) {
+
+     addCommands(
+        
+        // 1. intake till linebreck is broken
+        new ParallelDeadlineGroup(
+            new HasNote(m_lineBreak),
+            new ArmPivotFarHumanFeeder(m_ArmPivotSubsystem),
+            new ShootingFarHumanFeeder(m_shooter)
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
         ),
         
         // 2. Then continues intaking while moving to shot position
         new ParallelCommandGroup(
+<<<<<<< HEAD
             new ShootingWithoutCameras(aim),
             new ShootingFarHumanFeeder(shoot)
+=======
+            new ShootingWithoutCameras(m_ArmPivotSubsystem),
+            new ShootingFarHumanFeeder(m_shooter)
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
         ).withTimeout(0.5),
 
         // 3. Contine Moving to fire postion and revs shooter
         new ParallelCommandGroup(
+<<<<<<< HEAD
             new ShootingWithoutCameras(aim),
             new ShooterCrossField(shoot)
+=======
+            new ShootingWithoutCameras(m_ArmPivotSubsystem),
+            new ShooterCrossField(m_shooter)
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
         ).withTimeout(0.5),
        
         // 4. Shots Note
         new ParallelCommandGroup(
+<<<<<<< HEAD
             new ShootingWithoutCameras(aim),
             new ShooterCrossField(shoot),
             new ShooterFeederFire(feed)
@@ -81,3 +111,15 @@ public class FeedToShot extends Command {
   public void end(boolean interrupted) {}
 
 }
+=======
+            new ShootingWithoutCameras(m_ArmPivotSubsystem),
+            new ShooterCrossField(m_shooter),
+            new ShooterFeederFire(m_shooterFeeder)
+        ).withTimeout(0.25)
+    );
+ 
+
+}
+  
+}
+>>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
