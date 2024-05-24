@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.RobotContainer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -51,7 +52,8 @@ public class SwerveBase extends SubsystemBase {
   private Pigeon2Configuration pigeonConfig;
   private double oldPigeonYaw = 0.0;
 
- 
+public static double translation;
+public static double rotation;
 public static boolean needMoreAmps;
 public static int SwerveAmps;
 //Checks if setNeedMoreAmps is True of false and change need more
@@ -60,7 +62,10 @@ public void setNeedMoreAmps(boolean set) {
     needMoreAmps = set;
   }
 
-
+public static PIDController NoteRotation = new PIDController(0.0025, 0, 0);
+public static PIDController NoteTranslation = new PIDController(0.0025, 0, 0);
+public static PIDController AutoNoteRotation = new PIDController(0.025, 0, 0);
+public static PIDController AutoNoteTranslation = new PIDController(0.0175, 0, 0);
 
 public static boolean FasterSwerve;
 public void setFasterSwerve(boolean set) {
@@ -233,7 +238,8 @@ public void setSlowerSwerve(boolean set) {
   public void periodic() {
 
     //System.out.println(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-
+    //System.out.println(SwerveBase.NoteRotation.calculate(NoteDetection.x, 0.0));
+    System.out.println(NoteTranslation.calculate(NoteDetection.y, 0.0));
     // update the odometry every 20ms
     odometry.update(getHeading(), getModulePositions());
 
@@ -272,19 +278,11 @@ if (needMoreAmps == true) {
        }
     if (SlowerSwerve == true) {
       //System.out.println("Swerve is Slow");
-<<<<<<< HEAD
       SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.125;//Slower swerve speed
     }
     if(FasterSwerve == false & SlowerSwerve == false){
      //System.out.println("Swerve is Normal 0.5");
       SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.25;//Normal swerve speed
-=======
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.25;//Slower swerve speed
-    }
-    if(FasterSwerve == false & SlowerSwerve == false){
-     //System.out.println("Swerve is Normal 0.5");
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 1.0;//Normal swerve speed
->>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
       
     }
  }
@@ -298,8 +296,9 @@ if (needMoreAmps == true) {
    * rotation value
    * if the control is field relative or robot relative
    */
+  
   public void drive(double forward, double strafe, double rotation, boolean isFieldRelative) {
-
+  
     /**
      * ChassisSpeeds object to represent the overall state of the robot
      * ChassisSpeeds takes a forward and sideways linear value and a rotational
@@ -328,6 +327,8 @@ if (needMoreAmps == true) {
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
       forward, strafe, rotation, getHeading()
     );
+
+   
 
     // new ChassisSpeeds(forward, strafe, rotation)
 
@@ -473,6 +474,7 @@ if (needMoreAmps == true) {
     Translation2d diffPose = RobotContainer.m_ArmPivotSubsystem.getSpeakerPose().getTranslation().minus(robotPose);
     return new Rotation2d(Math.atan2(diffPose.getY(), diffPose.getX()));
   }
+
 
   public void stopModules() {
     frontLeft.stop();

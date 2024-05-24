@@ -43,6 +43,7 @@ public class ArmPivotSubsystem extends SubsystemBase {
   private Pose2d ampPose;
   private Pose2d humanfeederPose;
   private Pose2d linePose;
+  private double notePose;
   /** Pivots the arm. */
 
   private RelativeEncoder arm_pivot_encoder;
@@ -321,6 +322,7 @@ public class ArmPivotSubsystem extends SubsystemBase {
   //   angleTreeMap.put(189.0, 3.3809);
   //   angleTreeMap.put(195.0, 3.4285);
   }
+
 
 
   public void setGoalPose() {

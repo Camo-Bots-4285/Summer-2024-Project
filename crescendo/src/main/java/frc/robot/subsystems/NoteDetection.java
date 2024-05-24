@@ -18,7 +18,10 @@ public class NoteDetection extends SubsystemBase {
 
 
 public static double x;
- 
+public static double y;
+public static double area;
+public static boolean seesTarget;
+
   public NoteDetection() {
    
 }
@@ -53,7 +56,7 @@ public static double x;
   @Override
   public void periodic() {
    
-    System.out.println(x);
+    //System.out.println(y);
 
 NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-notes");
 NetworkTableEntry tx = table.getEntry("tx");
@@ -62,14 +65,42 @@ NetworkTableEntry ta = table.getEntry("ta");
 
 //read values periodically
  x = tx.getDouble(0.0);
-double y = ty.getDouble(0.0);
-double area = ta.getDouble(0.0);
+ y = ty.getDouble(0.0);
+ area = ta.getDouble(0.0);
 
 //post to smart dashboard periodically
 SmartDashboard.putNumber("Limelightx", x);
 SmartDashboard.putNumber("LimelightY", y);
 SmartDashboard.putNumber("LimelightArea", area);
+
+if (area < 0.01){
+  seesTarget = false;
   }
+  else{
+    seesTarget = true;
+  }
+  }
+
+  
+//   public void LimelightinAuto() {
+   
+//     System.out.println(x);
+
+// NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-notes");
+// NetworkTableEntry tx = table.getEntry("tx");
+// NetworkTableEntry ty = table.getEntry("ty");
+// NetworkTableEntry ta = table.getEntry("ta");
+
+// //read values periodically
+//  x = tx.getDouble(0.0);
+// double y = ty.getDouble(0.0);
+// double area = ta.getDouble(0.0);
+
+// //post to smart dashboard periodically
+// SmartDashboard.putNumber("Limelightx", x);
+// SmartDashboard.putNumber("LimelightY", y);
+// SmartDashboard.putNumber("LimelightArea", area);
+ // }
 
   @Override
   public void simulationPeriodic() {

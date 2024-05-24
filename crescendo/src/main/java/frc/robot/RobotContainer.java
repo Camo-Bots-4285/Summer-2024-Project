@@ -152,13 +152,13 @@ public class RobotContainer {
     mChooser.setDefaultOption("Default Auto", "StraitLineTest");
     mChooser.addOption("6 Piece", "C-N3-Shoot6-N7-Shoot6");
     mChooser.addOption("Test Aim", "AlignShooterTest");
-    mChooser.addOption("3 By 3", "3 By 3");
+    mChooser.addOption("A-N1", "A-N1");
     mChooser.addOption("Hellos", "Hellos");
     mChooser.addOption("B-Shoot2-N2-Shoot5", "B-Shoot2-N2-Shoot5");
     mChooser.addOption("StraitLineTest", "StraitLineTest");
     mChooser.addOption("Note Stop Test", "Note Stop Test");
     mChooser.addOption("NotePickupTest", "NotePickupTest");
-    
+    mChooser.addOption("NotePickupTest2", "NotePickupTest2");
 
     //Used to turn Cameras on and off in auto(Could be duplicated for each camera individualy)
     //Could be changed to camera in both auto and teleop if needed
@@ -341,11 +341,7 @@ public class RobotContainer {
     //         () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
     //     ));
 
-<<<<<<< HEAD
     btn_aim_human_feeder = new JoystickButton(driverJoystick, 9);
-=======
-    btn_aim_human_feeder = new JoystickButton(driverJoystick, 2);
->>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
     btn_aim_human_feeder.whileTrue(
         new TeleopSwerve(
             m_swerveBase,
@@ -392,19 +388,11 @@ public class RobotContainer {
     // btn_led_win.whileTrue(new LEDWinNo(m_led));
 
     //Buton auto intakes and shootes
-<<<<<<< HEAD
-     btn_far_feeder = new JoystickButton(driverJoystick, 2);
-    btn_far_feeder.whileTrue(new FeedToShot(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder,m_lineBreak));
-=======
-    //  btn_far_feeder = new JoystickButton(streamdeck, 2);
-    // btn_far_feeder.whileTrue(new FeedToShot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase));
->>>>>>> 69ecc61cc605f7b726e728ef9956c8542595dd05
-  //btn_far_feeder.whileTrue(new Commands.repeatedly(() -> (new FeedToShot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase))));
+    btn_far_feeder = new JoystickButton(driverJoystick, 2);
+    btn_far_feeder.toggleOnTrue(new FeedToShoot3(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder, m_lineBreak).repeatedly());
+  //btn_far_feeder.whileTrue(new Commands.repeatedly(() -> (new FeedToShoot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase))));
+   
 
-    //Buton mauale
-    // btn_far_feeder = new JoystickButton(streamdeck, 2);
-    // btn_far_feeder.whileTrue(new ArmPivotFarHumanFeeder(m_ArmPivotSubsystem));
-    // btn_far_feeder.whileTrue(new ShootingFarHumanFeeder(m_shooter));
 
     // Gets Note From Human Feeder And Uses Line Breaks To Stop Note At Specific Position
     btn_human_feeder = new JoystickButton(streamdeck, 9);

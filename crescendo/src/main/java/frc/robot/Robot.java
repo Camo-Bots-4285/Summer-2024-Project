@@ -88,7 +88,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
   //  if (RobotContainer.CamerasInAuto == true){
-      //m_robotContainer.m_aprilTag.updatedPoseFromTagAuto();
+      m_robotContainer.m_aprilTag.updatedPoseFromTagAuto();
+     // m_robotContainer.m_note_detection.LimelightinAuto();
     }
  // }
 

@@ -18,7 +18,7 @@ import frc.robot.subsystems.*;
  * This class is for the 5 Ball Auto Command
  */
 public class AutoTest extends SequentialCommandGroup {
-   // public class FeedToShot extends repeatingSequenceCommandGroup{
+   // public class FeedToShoot extends repeatingSequenceCommandGroup{
   public AutoTest(ShooterSubsystem m_shooter, ArmPivotSubsystem m_ArmPivotSubsystem,
       IntakeSubsystem m_intake, ShooterFeederSubsystem m_shooterFeeder,SwerveBase m_swerveBase,LineBreak m_lineBreak) {
 

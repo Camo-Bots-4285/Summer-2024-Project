@@ -63,7 +63,7 @@ feeder_motor.setInverted(true);
 
   public void reverse() {
     is_firing = true;
-    feeder_motor.set(0.15);
+   feeder_motor.set(-0.15);
   }
 
   /**

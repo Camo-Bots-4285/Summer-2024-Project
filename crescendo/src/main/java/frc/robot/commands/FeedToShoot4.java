@@ -4,25 +4,29 @@
 
 package frc.robot.commands;
 
-import frc.robot.Constants.ShooterConstants;
-import frc.robot.Constants.ShooterFeederConstants;
-import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.Constants.ArmPivotConstants;
+import frc.robot.Constants.LineBreakConstants;
+import frc.robot.subsystems.ArmPivotSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+//import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-
+import frc.robot.subsystems.LineBreak;
+import frc.robot.Constants.LEDConstants;
 /** An example command that uses an example subsystem. */
-public class ShootingFarHumanFeeder extends Command {
+public class FeedToShoot4 extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ShooterSubsystem m_subsystem;
+  private final LineBreak m_subsystem;
+
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ShootingFarHumanFeeder(ShooterSubsystem subsystem) {
+  public FeedToShoot4(LineBreak subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(m_subsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -32,18 +36,21 @@ public class ShootingFarHumanFeeder extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.suck(ShooterFeederConstants.SHOOTER_FEEDER_STATE_HUMAN_FEEDING);
+ 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.stop();
+   
   }
 
+ 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+  
+        return false;
+   
   }
 }

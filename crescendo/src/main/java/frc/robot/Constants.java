@@ -168,6 +168,7 @@ import frc.robot.subsystems.SwerveBase;
     public static final int SHOOTER_FEEDER_STATE_FLOOR_FEEDING = 0;
     public static final int SHOOTER_FEEDER_STATE_HUMAN_FEEDING = 1;
     public static final int SHOOTER_FEEDER_REVERSE = 3;
+    public static final int SHOOTER_FEEDER_FAR_FEEDER = 4;
 
   }
 
