@@ -47,7 +47,7 @@ import frc.robot.Constants;
 
 
 public class SwerveBase extends SubsystemBase {  
-  private final WPI_Pigeon2 pigeonSensor;
+  public static WPI_Pigeon2 pigeonSensor;
   private final AHRS navX;
   private Pigeon2Configuration pigeonConfig;
   private double oldPigeonYaw = 0.0;
@@ -62,10 +62,7 @@ public void setNeedMoreAmps(boolean set) {
     needMoreAmps = set;
   }
 
-public static PIDController NoteRotation = new PIDController(0.0025, 0, 0);
-public static PIDController NoteTranslation = new PIDController(0.0025, 0, 0);
-public static PIDController AutoNoteRotation = new PIDController(0.025, 0, 0);
-public static PIDController AutoNoteTranslation = new PIDController(0.0175, 0, 0);
+
 
 public static boolean FasterSwerve;
 public void setFasterSwerve(boolean set) {
@@ -166,7 +163,7 @@ public void setSlowerSwerve(boolean set) {
   private static final double rearLeftAngleOffset = Units.degreesToRadians(150.56);//202.85
   private static final double rearRightAngleOffset = Units.degreesToRadians(249.87);//132.45
 
-  private Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
+  public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
   private final double SCALE_X = -1/0.9;
   private final double SCALE_Y = -1/0.9;
 
@@ -239,7 +236,7 @@ public void setSlowerSwerve(boolean set) {
 
     //System.out.println(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond);
     //System.out.println(SwerveBase.NoteRotation.calculate(NoteDetection.x, 0.0));
-    System.out.println(NoteTranslation.calculate(NoteDetection.y, 0.0));
+    //System.out.println(NoteTranslation.calculate(NoteDetection.y, 0.0));
     // update the odometry every 20ms
     odometry.update(getHeading(), getModulePositions());
 

@@ -51,6 +51,7 @@ public class RobotContainer {
   public static ShooterSubsystem m_shooter = new ShooterSubsystem();
   public static LEDSubsystem m_led = new LEDSubsystem();
   public static NoteDetection m_note_detection = new NoteDetection();
+  public static SelfDriving m_selfDriving = new SelfDriving();
   public static ArmPivotSubsystem m_ArmPivotSubsystem;
   private SendableChooser<String> mChooser;
   private SendableChooser<String> mChooser1;
@@ -101,6 +102,7 @@ public class RobotContainer {
   private JoystickButton btn_more_amps;
   private JoystickButton btn_faster_swerve;
   private JoystickButton btn_slower_swerve;
+  private JoystickButton btn_self_driving_shoot;
 
   private JoystickButton btn_shooting_with_driver;  
   private JoystickButton btn_driver_fire;  
@@ -268,6 +270,13 @@ public class RobotContainer {
     btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
    
     
+    btn_more_amps = new JoystickButton(driverJoystick, 5);
+     btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(1)));
+     btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
+     btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
+     btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
+
+
     //You are welcome. I fucking did it. When button is pressed max amps to swerve drive will change
      btn_more_amps = new JoystickButton(driverJoystick, 5);
      btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
