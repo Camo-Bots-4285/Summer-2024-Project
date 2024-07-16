@@ -11,6 +11,8 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -31,7 +33,10 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+
 import java.sql.Driver;
+
+import org.ejml.equation.Variable;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -56,6 +61,10 @@ public static double translation;
 public static double rotation;
 public static boolean needMoreAmps;
 public static int SwerveAmps;
+
+public static double currentPoseX; 
+public static double currentPoseY;
+public static double currentPoseRotation; 
 //Checks if setNeedMoreAmps is True of false and change need more
 //amps based on if the command is being called
 public void setNeedMoreAmps(boolean set) {
@@ -164,8 +173,8 @@ public void setSlowerSwerve(boolean set) {
   private static final double rearRightAngleOffset = Units.degreesToRadians(249.87);//132.45
 
   public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
-  private final double SCALE_X = -1/0.9;
-  private final double SCALE_Y = -1/0.9;
+  public static double SCALE_X = -1/0.9;
+  public static double SCALE_Y = -1/0.9;
 
   /**
    * SwerveModule objects
@@ -234,6 +243,15 @@ public void setSlowerSwerve(boolean set) {
   @Override
   public void periodic() {
 
+    currentPoseX = getPose().getX();
+    currentPoseY = getPose().getY();
+    currentPoseRotation = getPose().getRotation().getDegrees() + 180;
+
+    //System.out.println(pigeonSensor.getYaw());
+    //System.out.println(getPose().getX());
+    //System.out.println(getPose().getY());
+    //System.out.println(getPose().getRotation().getDegrees()+180);
+   //System.out.println(getPose());
     //System.out.println(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond);
     //System.out.println(SwerveBase.NoteRotation.calculate(NoteDetection.x, 0.0));
     //System.out.println(NoteTranslation.calculate(NoteDetection.y, 0.0));
@@ -275,11 +293,11 @@ if (needMoreAmps == true) {
        }
     if (SlowerSwerve == true) {
       //System.out.println("Swerve is Slow");
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.125;//Slower swerve speed
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.5;//Slower swerve speed 0.125
     }
     if(FasterSwerve == false & SlowerSwerve == false){
      //System.out.println("Swerve is Normal 0.5");
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.25;//Normal swerve speed
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond =1.0;//Normal swerve speed 0.25
       
     }
  }
@@ -342,6 +360,9 @@ if (needMoreAmps == true) {
     final var translation = new Translation2d(m_pose.getX() * SCALE_X, m_pose.getY() * SCALE_Y);
     final var rotation = m_pose.getRotation().rotateBy(new Rotation2d(0));
     return new Pose2d(translation.getX(), translation.getY(), rotation);
+
+    //currentPoseX = m_pose.getX() * SCALE_X;
+    //currentPoseY = m_pose.getY() * SCALE_Y;
   }
 
   public Rotation2d getGyroscopeRotation() {

@@ -56,7 +56,6 @@ public static boolean seesTarget;
   @Override
   public void periodic() {
    
-    //System.out.println(y);
 
 NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-notes");
 NetworkTableEntry tx = table.getEntry("tx");
@@ -69,9 +68,9 @@ NetworkTableEntry ta = table.getEntry("ta");
  area = ta.getDouble(0.0);
 
 //post to smart dashboard periodically
-SmartDashboard.putNumber("Limelightx", x);
-SmartDashboard.putNumber("LimelightY", y);
-SmartDashboard.putNumber("LimelightArea", area);
+// SmartDashboard.putNumber("Limelightx", x);
+// SmartDashboard.putNumber("LimelightY", y);
+// SmartDashboard.putNumber("LimelightArea", area);
 
 if (area < 0.01){
   seesTarget = false;

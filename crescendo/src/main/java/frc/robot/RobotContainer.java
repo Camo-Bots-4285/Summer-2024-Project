@@ -103,6 +103,7 @@ public class RobotContainer {
   private JoystickButton btn_faster_swerve;
   private JoystickButton btn_slower_swerve;
   private JoystickButton btn_self_driving_shoot;
+  private JoystickButton btn_self_driving_amp;
 
   private JoystickButton btn_shooting_with_driver;  
   private JoystickButton btn_driver_fire;  
@@ -121,7 +122,7 @@ public class RobotContainer {
   public static boolean Camera5_InAuto;
   
 
- public static boolean isRed;
+ public static boolean isRed = false;
  
   /* Subsystems */
   // to bring back arm pivot
@@ -270,17 +271,27 @@ public class RobotContainer {
     btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
    
     
-    btn_more_amps = new JoystickButton(driverJoystick, 5);
-     btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(1)));
-     btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
-     btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
-     btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
+    btn_self_driving_shoot = new JoystickButton(driverJoystick, 5);
+    btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(1)));
+    btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
+    btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
+    btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
+    // btn_self_driving_shoot.whileTrue(new PickUpToScore(m_shooter, m_ArmPivotSubsystem, 
+    // m_shooterFeeder, m_lineBreak, m_swerveBase, m_selfDriving, m_intake,m_note_detection));
+
+    // btn_self_driving_amp = new JoystickButton(driverJoystick, 2);
+    // btn_self_driving_amp.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(2)));
+    // btn_self_driving_amp.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
+    // btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
+    // //btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
+    // btn_self_driving_amp.whileTrue(new PickUpToScoreAmp(m_shooter, m_ArmPivotSubsystem, 
+    // m_shooterFeeder, m_lineBreak, m_swerveBase, m_selfDriving, m_intake,m_note_detection));
 
 
-    //You are welcome. I fucking did it. When button is pressed max amps to swerve drive will change
-     btn_more_amps = new JoystickButton(driverJoystick, 5);
-     btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
-     btn_more_amps.onFalse(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(false)));
+    // //You are welcome. I fucking did it. When button is pressed max amps to swerve drive will change
+    //  btn_more_amps = new JoystickButton(driverJoystick, 5);
+    //  btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
+    //  btn_more_amps.onFalse(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(false)));
       
      //This will change max swerve speed thought SwerveBase to slower
      btn_slower_swerve = new JoystickButton(driverJoystick, 8);
@@ -397,7 +408,7 @@ public class RobotContainer {
     // btn_led_win.whileTrue(new LEDWinNo(m_led));
 
     //Buton auto intakes and shootes
-    btn_far_feeder = new JoystickButton(driverJoystick, 2);
+    btn_far_feeder = new JoystickButton(driverJoystick, 10);
     btn_far_feeder.toggleOnTrue(new FeedToShoot3(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder, m_lineBreak).repeatedly());
   //btn_far_feeder.whileTrue(new Commands.repeatedly(() -> (new FeedToShoot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase))));
    

@@ -64,7 +64,7 @@ drive = swerveBase;
 
 
 NoteSpeed = SelfDriving.AutoNoteTranslation.calculate(NoteDetection.y, 0.0);
-NoteSpeed = NoteSpeed < 0.055 ? NoteSpeed : 0.055; 
+NoteSpeed = NoteSpeed < 0.015 ? NoteSpeed : 0.015; 
 if (NoteDetection.seesTarget == true){
 drive.drive(-NoteSpeed, 0.0, (SelfDriving.AutoNoteRotation.calculate(NoteDetection.x, 0.0)), false);
 //(what goes here).set(SwerveBase.NoteRotation.calculate(NoteDetection.x, 0.0));
@@ -81,12 +81,12 @@ drive.drive(-NoteSpeed, 0.0, (SelfDriving.AutoNoteRotation.calculate(NoteDetecti
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-  //    if (LineBreak.HasNote == true){
+      if (LineBreak.HasNote == true){
         return false;
-  //   }
-  //   else{
-  //       return true;
-  //   }
-  // }
-}
+    }
+    else{
+        return true;
+    }
+  }
+
 }

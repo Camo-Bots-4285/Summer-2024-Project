@@ -260,11 +260,18 @@ public class SwerveModule extends SubsystemBase {
     // was driveMotor.setVoltage(SwerveConstants.driveFF.calculate(angularVelolictySetpoint)
     } else {
 
-      driveMotor.set(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed);
+      driveMotor.setVoltage(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed);
       //was (optimizedDesiredState.speedMetersPerSecond / SwerveConstants.maxSpeed)
       // this value should not be changed
     }
+
+      if(SwerveBase.needMoreAmps == true){
+    driveMotor.setSmartCurrentLimit(55);//SwerveBase.SwerveAmps
   }
+  if(SwerveBase.needMoreAmps == false)
+   driveMotor.setSmartCurrentLimit(30);
+    }
+  
 
   // public void setDesiredStateClosedLoop(SwerveModuleState unoptimizedDesiredState, boolean isAutoBalancing) {
   //   if (Math.abs(unoptimizedDesiredState.speedMetersPerSecond) < 0.001) {
@@ -312,11 +319,6 @@ public class SwerveModule extends SubsystemBase {
     //If brownout error occurs then lower smart current in SwerveBase Periodic
   // driveMotor.setSmartCurrentLimit(SwerveBase.SwerveAmps);//SwerveBase.SwerveAmps
  //System.out.println(SwerveBase.SwerveAmps);
-  if(SwerveBase.needMoreAmps == true){
-    driveMotor.setSmartCurrentLimit(35);//SwerveBase.SwerveAmps
+
   }
-  if(SwerveBase.needMoreAmps == false)
-   driveMotor.setSmartCurrentLimit(55);
-    }
-  
 }

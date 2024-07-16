@@ -60,6 +60,7 @@ public class ArmPivotSubsystem extends SubsystemBase {
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
   public static InterpolatingDoubleTreeMap angleTreeMap;
+ 
 
   private int active_mode;
   
@@ -499,6 +500,8 @@ public class ArmPivotSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+
+   
     // // This method will be called once per scheduler run
     // System.out.println(arm_pivot_encoder.isConnected() + " get" + arm_pivot_encoder.get() + " getDist " + arm_pivot_encoder.getDistance() + " getAbsPos" + arm_pivot_encoder.getAbsolutePosition() + " getPosOffset " + arm_pivot_encoder.getPositionOffset());
     

@@ -12,6 +12,7 @@ import frc.robot.subsystems.SwerveBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.SwerveBase;
 import frc.robot.subsystems.NoteDetection;
+import frc.robot.subsystems.SelfDriving;
 
 
 /** An example command that uses an example subsystem. */
@@ -41,8 +42,9 @@ drive = swerveBase;
   @Override
   public void execute() {
  
-drive.drive(SelfDriving.XSpeed, SelfDriving.YSpeed, SelfDriving.RotationSpeed, true);
-
+//drive.drive(0.0, 0.0, SelfDriving.RotationSpeed, true);
+//drive.drive(SelfDriving.XSpeed, SelfDriving.YSpeed, SelfDriving.RotationSpeed, true);
+drive.drive(0.25, 0.0, 0.0, true);
 }
 
   // Called once the command ends or is interrupted.
@@ -54,12 +56,12 @@ drive.drive(SelfDriving.XSpeed, SelfDriving.YSpeed, SelfDriving.RotationSpeed, t
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (SelfDriving.CloseEnough = true){
+   //if (SelfDriving.CloseEnough == false){
         return false;  
-        }
+    //     }
     
-    else{
-        return true;
-        }
+    // else{
+    //     return true;
+    //     }
     }   
 }

@@ -38,6 +38,19 @@ import frc.robot.subsystems.SwerveBase;
  */
  public final class Constants {
 
+  public static final Mode currentMode = Mode.REAL;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+  
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
@@ -236,10 +249,10 @@ import frc.robot.subsystems.SwerveBase;
 
     public static  double kTeleDriveMaxSpeedMetersPerSecond; // will tune 5.5 
      //  public static final double kTeleDriveMaxSpeedMetersPerSecond= 5.5;
-    public static double kTeleDriveMaxAccelerationUnitsPerSecond = 0.9;//will tune
+    public static double kTeleDriveMaxAccelerationUnitsPerSecond = 0.9;//will tune 1.5
     //Roational
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 0.25;//will tune
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 1.0;//will tune
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 0.25;//will tune 1.0
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 1.0;//will tune 3.0
 
     public static final double cameraToFrontEdgeDistanceMeters = Units.inchesToMeters(7);
 
@@ -318,5 +331,24 @@ public static class LineBreakConstants {
     public static final boolean LINEBREAK_BLOCKED = false;
     public static final boolean LINEBREAK_OPEN = true;
   }
+
+
+  //Build Constants For Logging
+
+  /**
+ * Automatically generated file containing build version information.
+ */
+public static class BuildConstants {
+  public static final String MAVEN_GROUP = "";
+  public static final String MAVEN_NAME = "crescendo";
+  public static final String VERSION = "unspecified";
+  public static final int GIT_REVISION = 6;
+  public static final String GIT_SHA = "cc013129e3c7396cb75b6440b939e763719c4f9a";
+  public static final String GIT_DATE = "2024-05-28 11:17:52 EDT";
+  public static final String GIT_BRANCH = "main";
+  public static final String BUILD_DATE = "2024-07-16 15:15:26 EDT";
+  public static final long BUILD_UNIX_TIME = 1721157326492L;
+  public static final int DIRTY = 1;
+}
 
  }

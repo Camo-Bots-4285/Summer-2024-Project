@@ -55,7 +55,7 @@ addRequirements(shoot,aim,feed,breakline,drive);
             // new ShootingFarHumanFeeder(shoot);
             // new m_shooter.ShootingFarHumanFeeder();
        // );
-        System.out.println("hi");
+       
         
       
 //         // 2. Then continues intaking while moving to shot position
