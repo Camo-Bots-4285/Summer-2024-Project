@@ -369,28 +369,28 @@ if (needMoreAmps == true) {
     return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
   }
 
-  public void drive(double forward, double strafe, double rotation, boolean isFieldRelative, boolean isAutoBalancing) {
+  // public void drive(double forward, double strafe, double rotation, boolean isFieldRelative, boolean isAutoBalancing) {
 
-    /**
-     * ChassisSpeeds object to represent the overall state of the robot
-     * ChassisSpeeds takes a forward and sideways linear value and a rotational
-     * value
-     * 
-     * speeds is set to field relative or default (robot relative) based on
-     * parameter
-     */
-    ChassisSpeeds speeds = isFieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(
-            forward, strafe, rotation, getHeading())
-        : new ChassisSpeeds(forward, strafe, rotation);
+  //   /**
+  //    * ChassisSpeeds object to represent the overall state of the robot
+  //    * ChassisSpeeds takes a forward and sideways linear value and a rotational
+  //    * value
+  //    * 
+  //    * speeds is set to field relative or default (robot relative) based on
+  //    * parameter
+  //    */
+  //   ChassisSpeeds speeds = isFieldRelative
+  //       ? ChassisSpeeds.fromFieldRelativeSpeeds(
+  //           forward, strafe, rotation, getHeading())
+  //       : new ChassisSpeeds(forward, strafe, rotation);
 
-    // use kinematics (wheel placements) to convert overall robot state to array of
-    // individual module states
-    // SwerveModuleState[] states = SwerveConstants.kinematics.toSwerveModuleStates(speeds);
+  //   // use kinematics (wheel placements) to convert overall robot state to array of
+  //   // individual module states
+  //   // SwerveModuleState[] states = SwerveConstants.kinematics.toSwerveModuleStates(speeds);
 
-    // setModuleStates(states, isAutoBalancing);
+  //   // setModuleStates(states, isAutoBalancing);
 
-  }
+  // }
 
   public void robotRelativeDrive(ChassisSpeeds speeds){
     setModuleStates(SwerveConstants.kinematics.toSwerveModuleStates(speeds));
