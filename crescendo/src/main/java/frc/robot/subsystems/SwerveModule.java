@@ -13,17 +13,21 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.*;
 
 
 public class SwerveModule extends SubsystemBase {
-
+  
 
   /**
    * Class to represent and handle a swerve module
@@ -56,8 +60,6 @@ public class SwerveModule extends SubsystemBase {
   public CANSparkMax getRotationMotor() {
     return rotationMotor;
   }
-
-  
 
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder rotationEncoder;
@@ -147,13 +149,15 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public Rotation2d getIntegratedAngle() {
-
+    // Wass
     // double unsignedAngle = rotationEncoder.getPosition() % (2 * Math.PI);
 
     // if (unsignedAngle < 0)
     //   unsignedAngle += 2 * Math.PI;
 
     // return new Rotation2d(unsignedAngle);
+
+    //Carlos
     return new Rotation2d(rotationEncoder.getPosition());
 
   }
@@ -209,28 +213,26 @@ public class SwerveModule extends SubsystemBase {
    * @param desiredState The desired state.
    * @param currentAngle The current module angle.
    */
-  // public static SwerveModuleState optimize(
-  //     SwerveModuleState desiredState, Rotation2d currentAngle) {
 
-  //   double targetAngle = placeInAppropriate0To360Scope(desiredState.angle.getRadians());
+// Wass
+//   public static SwerveModuleState optimize(
+//       SwerveModuleState desiredState, Rotation2d currentAngle) {
 
-  //   double targetSpeed = desiredState.speedMetersPerSecond;
-  //   double delta = (targetAngle - currentAngle.getRadians());
-  //   if (Math.abs(delta) > (Math.PI / 2 )) {
-  //     delta -= Math.PI * Math.signum(delta);
-  //     targetSpeed = -targetSpeed;
-  //     //targetAngle = delta > Math.PI / 2 ? (targetAngle -= Math.PI) : (targetAngle += Math.PI);
-  //   }
+//     double targetAngle = placeInAppropriate0To360Scope(desiredState.angle.getRadians());
 
-  //   double targetPosition = targetAngle + delta;
-  //   return new SwerveModuleState(targetSpeed, new Rotation2d(targetPosition));
-  //   //return new SwerveModuleState(targetSpeed, new Rotation2d(targetAngle));
-  // }
-
-    // if(math.abs(deltaDegrees) > 90.0) {
-    //   deltaDegrees -= 180.0 * Math.signum(deltaDegrees);
-    //   speed = -speed;
-    // }
+//     double targetSpeed = desiredState.speedMetersPerSecond;
+//     double delta = (targetAngle - currentAngle.getRadians());
+//     if (Math.abs(delta) > (Math.PI / 2 )) {
+//       //delta -= Math.PI * Math.signum(delta);
+//       targetSpeed = -targetSpeed;
+//       targetAngle = delta > Math.PI / 2 ? (targetAngle -= Math.PI) : (targetAngle += Math.PI);
+//     }
+// //Look where this was added
+//     //double targetPosition = targetAngle + delta;
+//    // return new SwerveModuleState(targetSpeed, new Rotation2d(targetPosition));
+    
+//     return new SwerveModuleState(targetSpeed, new Rotation2d(targetAngle));
+//   }
 
   /**
    * Method to set the desired state of the swerve module
@@ -244,6 +246,12 @@ public class SwerveModule extends SubsystemBase {
       return;
     }
 
+  // SwerveModuleState optimizedDesiredState = optimize(unoptimizedDesiredState, getIntegratedAngle());
+
+  //   double angularSetPoint = placeInAppropriate0To360Scope(
+  //       optimizedDesiredState.angle.getRadians());
+
+
     //SwerveModuleState optimizedDesiredState = optimize(unoptimizedDesiredState, getIntegratedAngle());
     //SwerveModuleState optimizedDesiredState = unoptimizedDesiredState;
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(unoptimizedDesiredState, getState().angle);
@@ -255,24 +263,25 @@ public class SwerveModule extends SubsystemBase {
 
     double angularVelolictySetpoint = optimizedDesiredState.speedMetersPerSecond /
         (SwerveConstants.wheelDiameter / 2.0);
+
     if (RobotState.isAutonomous()) {
-      driveMotor.setVoltage(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed);
-    // was driveMotor.setVoltage(SwerveConstants.driveFF.calculate(angularVelolictySetpoint)
+      //driveMotor.set(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed); is an alternataive but is very hard to tune PIDs
+      driveMotor.setVoltage((optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
     } else {
-
-      driveMotor.setVoltage(optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed);
-      //was (optimizedDesiredState.speedMetersPerSecond / SwerveConstants.maxSpeed)
-      // this value should not be changed
+      driveMotor.setVoltage((optimizedDesiredState.speedMetersPerSecond * SwerveConstants.maxSpeed)*SwerveConstants.calibrationFactorSB);
     }
 
-      if(SwerveBase.needMoreAmps == true){
-    driveMotor.setSmartCurrentLimit(55);//SwerveBase.SwerveAmps
-  }
-  if(SwerveBase.needMoreAmps == false)
-   driveMotor.setSmartCurrentLimit(30);
+    //Sets the max amps the swerve base can draw
+    if(RobotState.isAutonomous()){
+      driveMotor.setSmartCurrentLimit(55);
     }
-  
-
+    else if(SwerveBase.needMoreAmps == true){
+      driveMotor.setSmartCurrentLimit(55);
+    }
+    else if(SwerveBase.needMoreAmps == false){
+      driveMotor.setSmartCurrentLimit(45);
+    }
+}
   // public void setDesiredStateClosedLoop(SwerveModuleState unoptimizedDesiredState, boolean isAutoBalancing) {
   //   if (Math.abs(unoptimizedDesiredState.speedMetersPerSecond) < 0.001) {
   //     stop();
@@ -284,18 +293,20 @@ public class SwerveModule extends SubsystemBase {
   //   double angularSetPoint = placeInAppropriate0To360Scope(
   //       optimizedDesiredState.angle.getRadians());
 
-  //   rotationMotor.set(testRotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
+   // rotationMotor.set(testRotationController.calculate(getIntegratedAngle().getRadians(), angularSetPoint));
 
-  //   double angularVelolictySetpoint = optimizedDesiredState.speedMetersPerSecond /
-  //       (SwerveConstants.wheelDiameter / 2.0);
-  //   if (RobotState.isAutonomous() || isAutoBalancing == true) {
-  //     driveMotor.setVoltage(SwerveConstants.driveFF.calculate(angularVelolictySetpoint));
+    // double angularVelolictySetpoint = optimizedDesiredState.speedMetersPerSecond /
+    //     (SwerveConstants.wheelDiameter / 2.0);
 
-  //   } else {
 
-  //     driveMotor.set(optimizedDesiredState.speedMetersPerSecond / SwerveConstants.maxSpeed);
-  //   }
-  // }
+    // if (RobotState.isAutonomous() || isAutoBalancing == true) {
+    //   driveMotor.setVoltage(SwerveConstants.driveFF.calculate(angularVelolictySetpoint));
+
+    // } else {
+
+    //   driveMotor.set(optimizedDesiredState.speedMetersPerSecond / SwerveConstants.maxSpeed);
+    // }
+  //}
 
   public void resetEncoders() {
 
@@ -314,11 +325,5 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState(getCurrentVelocityRadiansPerSecond() , getIntegratedAngle());
   }
 
-@Override
-  public void periodic() {
-    //If brownout error occurs then lower smart current in SwerveBase Periodic
-  // driveMotor.setSmartCurrentLimit(SwerveBase.SwerveAmps);//SwerveBase.SwerveAmps
- //System.out.println(SwerveBase.SwerveAmps);
 
-  }
 }

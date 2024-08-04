@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 250.0,
-    "maxAngularAcceleration": 200.0
+    "maxAngularAcceleration": 250.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Shoot Places",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 1.0

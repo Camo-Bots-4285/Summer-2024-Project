@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.72,
-      "y": 6.0
+      "x": 1.43,
+      "y": 5.55
     },
     "rotation": 180.0
   },
@@ -24,7 +24,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Rotation Test"
+                  "pathName": "New New New Path"
                 }
               }
             ]

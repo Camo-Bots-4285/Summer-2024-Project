@@ -22,7 +22,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.NoteDetection;
+import frc.robot.subsystems.SelfDriving;
 import frc.robot.subsystems.SwerveBase;
+
+ 
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -37,6 +41,7 @@ import frc.robot.subsystems.SwerveBase;
  * constants are needed, to reduce verbosity.
  */
  public final class Constants {
+  public static boolean isRed= true;
 
   public static final Mode currentMode = Mode.REAL;
 
@@ -50,7 +55,7 @@ import frc.robot.subsystems.SwerveBase;
     /** Replaying from a log file. */
     REPLAY
   }
-  
+ 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
@@ -101,7 +106,7 @@ import frc.robot.subsystems.SwerveBase;
     public static final double POSITION_PID_AMP_SCORING_POS = -1.9; //-1.738;
     public static final double POSITION_PID_SHOOTING_WITHOUT_CAMERAS_N1 = 3.25; //1.07126
     public static final double POSITION_PID_SHOOTING_DEFENCE = .1;
-    public static final double POSITION_PID_LINE_SCORING = 2.999998;
+    public static final double POSITION_PID_LINE_SCORING = 2.7;//2.85
     public static final double POSITION_PID_SHOOTING_TRAP = 1.761905;
     public static final double POSITION_PID_FAR_FEEDER = 2.833331;
 
@@ -211,9 +216,15 @@ import frc.robot.subsystems.SwerveBase;
     );
 
     public static Translation2d mDriveRadius = new Translation2d(trackWidth/2, wheelBase / 2);
+
+    //Swerve Drive Calibration Factor used to make robot go commanded speed should be tuned with each bot
+    //Find the value by deviding the actual speed by the commanded speed recommend doing multiple test with lower speeds
+    //Units are meter per second
+    public static double calibrationFactorSB = 1.5;
+
     /* Swerve Profiling Values */
-    public static final double maxSpeed = 6.03504;//In meter/Second //Wass "faster as number gets closer to two"
-    public static final double maxAngularVelocity = 30.0;//Is in radian or revolutions? 
+    public static final double maxSpeed = 6.03504;//In meter/Second 
+    public static final double maxAngularVelocity = 2.0;//Is in radian
 
     public static final int frontLeftRotationMotorId = 2;//21
     public static final int frontLeftDriveMotorId = 1;//11
@@ -221,40 +232,22 @@ import frc.robot.subsystems.SwerveBase;
     public static final int frontRightRotationMotorId = 8;//24
     public static final int frontRightDriveMotorId = 7;//14
 
-    public static final int rearLeftRotationMotorId = 4;
-    public static final int rearLeftDriveMotorId = 3;
+    public static final int rearLeftRotationMotorId = 4;//22
+    public static final int rearLeftDriveMotorId = 3;//12
 
-    public static final int rearRightRotationMotorId = 6;
-    public static final int rearRightDriveMotorId = 5;
+    public static final int rearRightRotationMotorId = 6;//23
+    public static final int rearRightDriveMotorId = 5;//13
 
     public static final int frontLeftRotationEncoderId = 1;
     public static final int frontRightRotationEncoderId = 4;
     public static final int rearLeftRotationEncoderId = 2;
     public static final int rearRightRotationEncoderId = 3;
 
-    //These values affect teleop only 
-    //Auto is contoled by path planner and auto PID 
-    //Translational
- 
- //working on making buttion to change speed and amp draw\
- // use pigeon reset as an eample
-    //  public static final double how = x;
-
-  //   if (btn_shooting_without_cameras == true) {
-  //     how.set (3);
-  //   }
-  //   else if (btn_shooting_without_cameras == false) {
-  //     desired_location = ArmPivotConstants.POSITION_PID_INTAKE_FEEDER;
-  //   }
-
-    public static  double kTeleDriveMaxSpeedMetersPerSecond; // will tune 5.5 
-     //  public static final double kTeleDriveMaxSpeedMetersPerSecond= 5.5;
-    public static double kTeleDriveMaxAccelerationUnitsPerSecond = 0.9;//will tune 1.5
-    //Roational
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 0.25;//will tune 1.0
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 1.0;//will tune 3.0
-
-    public static final double cameraToFrontEdgeDistanceMeters = Units.inchesToMeters(7);
+    public static  double kTeleDriveMaxSpeedMetersPerSecond;  
+    public static double kTeleDriveMaxAccelerationUnitsPerSecond = 1.5;
+    
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 3.1415/4;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3.0;
 
     public static final int PIGEON_SENSOR_ID = 0;
 
@@ -296,8 +289,19 @@ import frc.robot.subsystems.SwerveBase;
     public static final Transform3d APRILTAG_CAMERA_TO_ROBOT_5 = new Transform3d(
         new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
         new Rotation3d(30.0, Units.degreesToRadians(0.0), Units.degreesToRadians(0)));
-
     
+        //Main Note Camera Assumed to be center 
+     public static final Transform3d Note_Camera_Main_To_Robot = new Transform3d(
+        new Translation3d(0.18, 0.0, 0.38),//0.072, -0.311, 0.669
+        new Rotation3d(Units.degreesToRadians(0.0),15.0, Units.degreesToRadians(0.0)));
+
+      public static final Transform3d Note_Camera_Assistant1_To_Robot = new Transform3d(
+        new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
+        new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
+
+      public static final Transform3d Note_Camera_Assistant2_To_Robot = new Transform3d(
+        new Translation3d(0.072, 0.311, 0.669),//0.072, -0.311, 0.669
+        new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(0.0), Units.degreesToRadians(0.0)));
     
     
     public static final double FIELD_LENGTH_METERS = 16.542;
@@ -308,8 +312,10 @@ import frc.robot.subsystems.SwerveBase;
       new Rotation2d(Math.PI)
     );
 
+    
 
     /** Minimum target ambiguity. Targets with higher ambiguity will be discarded */
+    //Raise this value to reject less accurate poses 0.2 recommended by photon vision
     public static final double APRILTAG_AMBIGUITY_THRESHOLD = 0.2;
   }
 
@@ -318,8 +324,14 @@ import frc.robot.subsystems.SwerveBase;
       public static final int DIO_LED_IS_RED = 5;
       public static final int DIO_LED_WIN = 6;
 
+      // public static int DIO_One = 1;
+      // public static int DIO_Ten = 2;
+      // public static int DIO_Hundred = 3;
+      // public static int DIO_Thousand = 4;
       public static final Boolean DIO_ENABLE = false;
       public static final Boolean DIO_DISABLE = true;
+
+      
     }
 
 
@@ -332,23 +344,17 @@ public static class LineBreakConstants {
     public static final boolean LINEBREAK_OPEN = true;
   }
 
-
-  //Build Constants For Logging
-
-  /**
- * Automatically generated file containing build version information.
- */
-public static class BuildConstants {
-  public static final String MAVEN_GROUP = "";
-  public static final String MAVEN_NAME = "crescendo";
-  public static final String VERSION = "unspecified";
-  public static final int GIT_REVISION = 6;
-  public static final String GIT_SHA = "cc013129e3c7396cb75b6440b939e763719c4f9a";
-  public static final String GIT_DATE = "2024-05-28 11:17:52 EDT";
-  public static final String GIT_BRANCH = "main";
-  public static final String BUILD_DATE = "2024-07-16 15:15:26 EDT";
-  public static final long BUILD_UNIX_TIME = 1721157326492L;
-  public static final int DIRTY = 1;
-}
+  public static class BuildConstants {
+    public static final String MAVEN_GROUP = "";
+    public static final String MAVEN_NAME = "crescendo";
+    public static final String VERSION = "unspecified";
+    public static final int GIT_REVISION = 6;
+    public static final String GIT_SHA = "cc013129e3c7396cb75b6440b939e763719c4f9a";
+    public static final String GIT_DATE = "2024-05-28 11:17:52 EDT";
+    public static final String GIT_BRANCH = "main";
+    public static final String BUILD_DATE = "2024-07-16 15:15:26 EDT";
+    public static final long BUILD_UNIX_TIME = 1721157326492L;
+    public static final int DIRTY = 1;
+  }
 
  }

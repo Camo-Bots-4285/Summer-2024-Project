@@ -4,12 +4,41 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.*;
+import frc.robot.commands.ArmPivot.AMPScoringPos;
+import frc.robot.commands.ArmPivot.ArmPivotErrected;
+import frc.robot.commands.ArmPivot.ArmPivotHumanFeeder;
+import frc.robot.commands.ArmPivot.ArmPivotLineScoring;
+import frc.robot.commands.ArmPivot.ArmPivotShooting;
+import frc.robot.commands.ArmPivot.ArmPivotStore;
+import frc.robot.commands.ArmPivot.ArmPivotTrap;
+import frc.robot.commands.ArmPivot.ShootingWithoutCameras;
+import frc.robot.commands.ArmPivot.ShootingWithoutCameras2ndStageLeg;
+import frc.robot.commands.ArmPivot.ShootingWithoutCamerasN1;
+import frc.robot.commands.ArmPivot.ShootingWithoutCamerasStageLeg;
+import frc.robot.commands.Hybrid.DriveTest;
+import frc.robot.commands.Hybrid.SelfDrivingShot;
+import frc.robot.commands.Hybrid.LineBreakArmPivot.ReadyToShoot;
+import frc.robot.commands.Hybrid.LineBreakFullShooter.FeedToShoot3;
+import frc.robot.commands.Hybrid.LineBreakFullShooter.HasNote1;
+import frc.robot.commands.Hybrid.LineBreakFullShooter.HasNote2;
+import frc.robot.commands.Intake.FloorFeederTest;
+import frc.robot.commands.Intake.ReverseIntake;
+import frc.robot.commands.ShooterFeederWheels.ShooterFeederAMP;
+import frc.robot.commands.ShooterFeederWheels.ShooterFeederFire;
+import frc.robot.commands.ShooterFeederWheels.ShooterFeederHuman;
+import frc.robot.commands.ShooterFeederWheels.ShooterFeederPickUp;
+import frc.robot.commands.ShooterWheels.ShooterAMP;
+import frc.robot.commands.ShooterWheels.ShooterCrossField;
+import frc.robot.commands.ShooterWheels.ShooterTest;
+import frc.robot.commands.ShooterWheels.ShooterTrapScoring;
+import frc.robot.commands.Swerve.AlignPoseSpeaker;
+import frc.robot.commands.Swerve.LaneLogicIn;
+import frc.robot.commands.Swerve.LaneLogicOut;
+import frc.robot.commands.Swerve.MoveToNote;
+import frc.robot.commands.Swerve.MoveToPose;
+import frc.robot.commands.Swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import frc.robot.Constants.*;
-
 
 import java.util.function.BiFunction;
 import java.util.function.DoubleSupplier;
@@ -40,7 +69,6 @@ import edu.wpi.first.wpilibj2.command.*;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-
   public static SwerveBase m_swerveBase = new SwerveBase();
   //public static SwerveModule m_SwerveModule = SwerveModule();
   public static AprilTagSubsystem m_aprilTag = new AprilTagSubsystem();
@@ -50,9 +78,13 @@ public class RobotContainer {
   public ShooterFeederSubsystem m_shooterFeeder = new ShooterFeederSubsystem(this);
   public static ShooterSubsystem m_shooter = new ShooterSubsystem();
   public static LEDSubsystem m_led = new LEDSubsystem();
-  public static NoteDetection m_note_detection = new NoteDetection();
   public static SelfDriving m_selfDriving = new SelfDriving();
+  public static NoteDetection m_note_detection = new NoteDetection();
+  
+ 
   public static ArmPivotSubsystem m_ArmPivotSubsystem;
+
+  //Defines all mChooser that will display in suffle board
   private SendableChooser<String> mChooser;
   private SendableChooser<String> mChooser1;
   private SendableChooser<String> mChooser2;
@@ -69,6 +101,8 @@ public class RobotContainer {
   /* Human interfaces */
   private final Joystick driverJoystick;
   private final Joystick streamdeck;
+  
+  //Defines all buttons that will be used to control the robot
   // private JoystickButton btn_arm_pivot_down;
   private JoystickButton btn_arm_pivot_up;
   private JoystickButton btn_shooter_feeder;
@@ -103,17 +137,19 @@ public class RobotContainer {
   private JoystickButton btn_faster_swerve;
   private JoystickButton btn_slower_swerve;
   private JoystickButton btn_self_driving_shoot;
-  private JoystickButton btn_self_driving_amp;
+  private JoystickButton btn_pickup_note_to_shoot;
 
   private JoystickButton btn_shooting_with_driver;  
   private JoystickButton btn_driver_fire;  
+  private JoystickButton btn_pose_note;
 
 
   private DoubleSupplier limit;
   private DoubleSupplier stopRotation;
+  private DoubleSupplier stopMainualDriving;
   private BiFunction<Double, Double, Double> Clamp;
   
-  private PIDController angleController;
+  public static PIDController angleController;
 
   public static boolean Camera1_InAuto;
   public static boolean Camera2_InAuto;
@@ -122,17 +158,19 @@ public class RobotContainer {
   public static boolean Camera5_InAuto;
   
 
- public static boolean isRed = false;
+//  public static boolean isRed= true;
  
   /* Subsystems */
   // to bring back arm pivot
+
+
   
   /* Parent Class */
   private final Robot m_robot;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController = new CommandXboxController(
-      OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = 
+  new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -140,15 +178,11 @@ public class RobotContainer {
   public RobotContainer(Robot robot) {
     m_robot = robot;
 
+    //Defines what port of the compter each controler will be located in
     driverJoystick = new Joystick(0);
     streamdeck = new Joystick(1);
 
-    //Added by Spencer to ramp power by lever
-    limit = () -> 0.55 - 0.45 * driverJoystick.getRawAxis(SwerveConstants.sliderAxis);
-    /* maps sliderAxis to be between 0.1 and 1.0 */
-    stopRotation = () -> driverJoystick.getRawButton(9) ? 0.0 : 1.0; //Locks Rotation
-    Clamp  = (val, lim) -> (Math.abs(val) < lim) ? val : Math.copySign(lim, val);
-    
+
     //Put auto in here and they will show up in smart dash board do no forget to select auto before match
     mChooser = new SendableChooser<>();
     SmartDashboard.putData("Auto Choices",  mChooser);
@@ -162,9 +196,11 @@ public class RobotContainer {
     mChooser.addOption("Note Stop Test", "Note Stop Test");
     mChooser.addOption("NotePickupTest", "NotePickupTest");
     mChooser.addOption("NotePickupTest2", "NotePickupTest2");
+    mChooser.addOption("103 Auto", "103 Auto");
+    mChooser.addOption("RotationTest", "RotationTest");
+    
 
-    //Used to turn Cameras on and off in auto(Could be duplicated for each camera individualy)
-    //Could be changed to camera in both auto and teleop if needed
+    //Used to turn Cameras on and off in auto
     mChooser1 = new SendableChooser<>();
     mChooser1.setDefaultOption("Yes", "Yes");
     mChooser1.addOption("No", "No");
@@ -193,32 +229,49 @@ public class RobotContainer {
     
 
     //Used to make isRed true or false to inverts what side the robot is on
-    mChooser6 = new SendableChooser<>();
-    mChooser6.setDefaultOption("Red", "Red");
-    mChooser6.addOption("Blue", "Blue");
-    SmartDashboard.putData("Aliance Color",  mChooser6);
+    // mChooser6 = new SendableChooser<>();
+    // mChooser6.setDefaultOption("Red", "Red");
+    // mChooser6.addOption("Blue", "Blue");
+    // SmartDashboard.putData("Aliance Color",  mChooser6);
 
-    mChooser6 = new SendableChooser<>();
-    mChooser6.setDefaultOption("Yes", "Yes");
-    mChooser6.addOption("No", "No");
-    SmartDashboard.putData("Auto Of Set in Auto" ,  mChooser6);
-
-   
+ 
     // Controles rotaion Whne Auto Targeting
-    angleController = new PIDController(1.0, 0.0, 0.0);//9   changed 3/21/2024 by cal ask wessly to make a sepret speed cosntant for this
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
-    // m_swerveBase = new SwerveBase();
+     angleController = new PIDController(1.0, 0.0, 0.0);
+     angleController.enableContinuousInput(-Math.PI, Math.PI);
+    
+         //Added by Spencer to ramp power by lever
+    //limit = () -> 0.55 - 0.45 * driverJoystick.getRawAxis(SwerveConstants.sliderAxis);
+    /* maps sliderAxis to be between 0.1 and 1.0 */
+   // Clamp  = (val, lim) -> (Math.abs(val) < lim) ? val : Math.copySign(lim, val);
+
+   //Old controler interface that used Spencer clamp which had now been moved to control max speed thought TeleOp Swerve
+     // m_swerveBase = new SwerveBase();
+    // m_swerveBase.setDefaultCommand(
+    //     new TeleopSwerve(
+    //         m_swerveBase,
+    //         () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis) , limit.getAsDouble()),
+    //         () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
+    //         () -> -Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.rotationAxis) ,limit.getAsDouble() * stopRotation.getAsDouble()),
+    //         () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
+            
+    //     ));
+
+    //Stops the robot from reciving any rotation command
+   stopRotation = () -> driverJoystick.getRawButton(9) ? 0.0 : 1.0;
+    //New driver interface without clamp and new lever ramp range from 20%-100% commanded max power
+  
+  
     m_swerveBase.setDefaultCommand(
         new TeleopSwerve(
             m_swerveBase,
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis), limit.getAsDouble()),
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
-            () -> -Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.rotationAxis),
-                limit.getAsDouble() * stopRotation.getAsDouble()),
+            () -> (driverJoystick.getRawAxis(SwerveConstants.translationAxis)),
+            () -> (driverJoystick.getRawAxis(SwerveConstants.strafeAxis)),
+            () -> -(driverJoystick.getRawAxis(SwerveConstants.rotationAxis)* stopRotation.getAsDouble()),
+            () -> (-(driverJoystick.getRawAxis(SwerveConstants.sliderAxis)-1)/2.5+0.2),
             () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
-            //Sandman 
-        ));
-
+          
+        ) );
+ 
     // to bring back arm pivot
     m_ArmPivotSubsystem = new ArmPivotSubsystem(m_swerveBase);
 
@@ -252,46 +305,26 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    // new Trigger(m_exampleSubsystem::exampleCondition)
-    // .onTrue(new ExampleCommand(m_exampleSubsystem));
+    // btn_example = new Trigger(m_exampleSubsystem::exampleCondition)
+    // btn_example.onTrue(new ExampleCommand(m_exampleSubsystem));
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is
     // pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+
+
+    //The following commands should be transfered year to you
+
+    //ReZeros pigeon if intale calibration was not correct
     btn_reset_yaw = new JoystickButton(driverJoystick, 7);
     btn_reset_yaw.onTrue(new InstantCommand(() -> m_swerveBase.setNeedPigeonReset(true)));
-    //btn_auto_pickup
 
-    btn_auto_pickup = new JoystickButton(driverJoystick, 4);
-    btn_auto_pickup.whileTrue(new MoveToNote(m_swerveBase));
-    btn_auto_pickup.whileTrue(new FloorFeederTest(m_intake));
-    btn_auto_pickup.whileTrue(new ArmPivotErrected(m_ArmPivotSubsystem));
-    btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
-   
-    
-    btn_self_driving_shoot = new JoystickButton(driverJoystick, 5);
-    btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(1)));
-    btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
-    btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
-    btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
-    // btn_self_driving_shoot.whileTrue(new PickUpToScore(m_shooter, m_ArmPivotSubsystem, 
-    // m_shooterFeeder, m_lineBreak, m_swerveBase, m_selfDriving, m_intake,m_note_detection));
-
-    // btn_self_driving_amp = new JoystickButton(driverJoystick, 2);
-    // btn_self_driving_amp.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(2)));
-    // btn_self_driving_amp.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
-    // btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
-    // //btn_self_driving_shoot.whileTrue(new MoveToPose(m_swerveBase));
-    // btn_self_driving_amp.whileTrue(new PickUpToScoreAmp(m_shooter, m_ArmPivotSubsystem, 
-    // m_shooterFeeder, m_lineBreak, m_swerveBase, m_selfDriving, m_intake,m_note_detection));
-
-
-    // //You are welcome. I fucking did it. When button is pressed max amps to swerve drive will change
-    //  btn_more_amps = new JoystickButton(driverJoystick, 5);
-    //  btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
-    //  btn_more_amps.onFalse(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(false)));
+    //Sets the robot max amp draw to more then normal
+     btn_more_amps = new JoystickButton(driverJoystick, 8);
+     btn_more_amps.whileTrue(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(true)));
+     btn_more_amps.onFalse(new RunCommand(() -> m_swerveBase.setNeedMoreAmps(false)));
       
      //This will change max swerve speed thought SwerveBase to slower
      btn_slower_swerve = new JoystickButton(driverJoystick, 8);
@@ -299,9 +332,42 @@ public class RobotContainer {
      btn_slower_swerve.onFalse(new RunCommand(() -> m_swerveBase.setSlowerSwerve(false)));
 
     //This will change max swerve speed thought SwerveBase to faster
-     btn_faster_swerve = new JoystickButton(driverJoystick, 3);
+     btn_faster_swerve = new JoystickButton(driverJoystick, 5);
      btn_faster_swerve.whileTrue(new RunCommand(() -> m_swerveBase.setFasterSwerve(true)));
      btn_faster_swerve.onFalse(new RunCommand(() -> m_swerveBase.setFasterSwerve(false)));
+    
+
+
+     //The following are the hybrid commands that use multiple systems in one button
+
+    // // //Auto Dirves to note
+    // btn_auto_pickup = new JoystickButton(driverJoystick, 4);
+    // btn_auto_pickup.whileTrue(new MoveToNote(m_swerveBase));
+    // btn_auto_pickup.whileTrue(new FloorFeederTest(m_intake));
+    // btn_auto_pickup.whileTrue(new ArmPivotErrected(m_ArmPivotSubsystem));
+    // btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
+    // //btn_auto_pickup.whileTrue(new RunCommand(() -> m_note_detection.FindTheNotes()));
+
+    //Auto drive to estimated note pose
+    // btn_auto_pickup = new JoystickButton(driverJoystick, 4);
+    // btn_auto_pickup.whileTrue(new MoveToNotePose(m_swerveBase));
+    // btn_auto_pickup.whileTrue(new FloorFeederTest(m_intake));
+    // btn_auto_pickup.whileTrue(new ArmPivotErrected(m_ArmPivotSubsystem));
+    // btn_auto_pickup.whileTrue(new ShooterFeederPickUp(m_shooterFeeder));
+    // btn_auto_pickup.whileTrue(new RunCommand(() -> m_note_detection.FindTheNotes()));
+
+    
+     btn_self_driving_shoot = new JoystickButton(driverJoystick, 3);
+     btn_self_driving_shoot.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(10)));
+     btn_self_driving_shoot.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
+     btn_self_driving_shoot.whileTrue(new LaneLogicIn(m_swerveBase));
+
+
+    btn_pickup_note_to_shoot = new JoystickButton(driverJoystick, 4);
+    btn_pickup_note_to_shoot.whileTrue(new SelfDrivingShot(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder, m_lineBreak, m_selfDriving, m_swerveBase, m_intake)/*.repeatedly()*/);
+
+    // btn_pickup_note_to_shoot = new JoystickButton(driverJoystick, 4);
+    // btn_pickup_note_to_shoot.whileTrue(new DriveTest(m_swerveBase));
 
     btn_shooter_feeder = new JoystickButton(driverJoystick, 11);
     btn_shooter_feeder.whileTrue(new ShooterFeederAMP(m_shooterFeeder));
@@ -330,16 +396,25 @@ public class RobotContainer {
     // btn_aim_speaker = new JoystickButton(streamdeck, 6);
     // btn_aim_speaker.whileTrue(new ArmPivotShooting(m_ArmPivotSubsystem));
    
-   btn_aim_speaker = new JoystickButton(driverJoystick, 6);
-    btn_aim_speaker.whileTrue(new ArmPivotShooting(m_ArmPivotSubsystem));
-    btn_aim_speaker.whileTrue(
-        new TeleopSwerve(
-            m_swerveBase,
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis), limit.getAsDouble()),
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
-            () -> angleController.calculate(m_swerveBase.getPose().getRotation().getRadians(), m_swerveBase.getAngleToSpeaker().getRadians()),
-            () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
-        ));
+  //  btn_aim_speaker = new JoystickButton(driverJoystick, 6);
+  //   btn_aim_speaker.whileTrue(new ArmPivotShooting(m_ArmPivotSubsystem));
+  //   btn_aim_speaker.whileTrue(
+  //       new TeleopSwerve(
+  //           m_swerveBase,
+  //           () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis), limit.getAsDouble()),
+  //           () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
+  //           () -> angleController.calculate(m_swerveBase.getPose().getRotation().getRadians(), m_swerveBase.getAngleToSpeaker().getRadians()),
+  //           () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
+  //       ));
+
+//Currently not working
+  // btn_pose_note = new JoystickButton(driverJoystick, 6);
+  //   // btn_pose_note.whileTrue(new MoveToNoteByPose(m_swerveBase));
+  //   btn_pose_note.whileTrue(new MoveToPose(m_swerveBase));
+  //   btn_pose_note.whileTrue(new RunCommand(() -> m_selfDriving.setTargetPose(3)));
+  //   btn_pose_note.onFalse(new RunCommand(() -> m_selfDriving.setTargetPose(0)));
+  //   btn_pose_note.whileTrue(new RunCommand(() -> m_selfDriving.DriveCalculation()));
+
 
         // btn_aim_line = new JoystickButton(streamdeck, 1);
         // btn_aim_line.whileTrue(
@@ -362,14 +437,14 @@ public class RobotContainer {
     //     ));
 
     btn_aim_human_feeder = new JoystickButton(driverJoystick, 9);
-    btn_aim_human_feeder.whileTrue(
-        new TeleopSwerve(
-            m_swerveBase,
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis), limit.getAsDouble()),
-            () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
-            () -> angleController.calculate(m_swerveBase.getPose().getRotation().getRadians(), m_ArmPivotSubsystem.getHumanFeederAngle().getRadians()),
-           () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
-        ));
+    //btn_aim_human_feeder.whileTrue(
+        // new TeleopSwerve(
+        //     m_swerveBase,
+        //     () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.translationAxis), limit.getAsDouble()),
+        //     () -> Clamp.apply(driverJoystick.getRawAxis(SwerveConstants.strafeAxis), limit.getAsDouble()),
+        //     () -> angleController.calculate(m_swerveBase.getPose().getRotation().getRadians(), m_ArmPivotSubsystem.getHumanFeederAngle().getRadians()),
+        //    () -> !driverJoystick.getRawButton(1) // inverted=fieldCentric, non-inverted=RobotCentric
+        // ));
     
     // Intakes Note From Floor And Uses Line Breaks To Stop Note At Specific Position
     btn_floor_feeder = new JoystickButton(streamdeck, 5);
@@ -408,7 +483,7 @@ public class RobotContainer {
     // btn_led_win.whileTrue(new LEDWinNo(m_led));
 
     //Buton auto intakes and shootes
-    btn_far_feeder = new JoystickButton(driverJoystick, 10);
+    btn_far_feeder = new JoystickButton(driverJoystick, 2);
     btn_far_feeder.toggleOnTrue(new FeedToShoot3(m_shooter, m_ArmPivotSubsystem,  m_shooterFeeder, m_lineBreak).repeatedly());
   //btn_far_feeder.whileTrue(new Commands.repeatedly(() -> (new FeedToShoot(m_shooter, m_ArmPivotSubsystem, m_intake,  m_shooterFeeder, m_swerveBase))));
    
@@ -480,8 +555,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("FeederIntake", (new ShooterFeederPickUp(m_shooterFeeder)));
     NamedCommands.registerCommand("Align", (new AlignPoseSpeaker(m_swerveBase)));
     NamedCommands.registerCommand("AlignShooter", (new ArmPivotShooting(m_ArmPivotSubsystem)));
-    NamedCommands.registerCommand("HasNote", (new HasNote(m_lineBreak)));
+    NamedCommands.registerCommand("HasNote1", (new HasNote1(m_lineBreak)));
+    NamedCommands.registerCommand("HasNote2", (new HasNote2(m_lineBreak)));
     NamedCommands.registerCommand("MovetoNote", (new MoveToNote(m_swerveBase)));
+    NamedCommands.registerCommand("BlackLine", (new ArmPivotLineScoring(m_ArmPivotSubsystem)));
+    NamedCommands.registerCommand("ReadyToShoot", (new ReadyToShoot(m_lineBreak)));
+    NamedCommands.registerCommand("Store", (new ArmPivotStore(m_ArmPivotSubsystem)));
   }
 
   /**
@@ -491,18 +570,19 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    // return Autos.exampleAuto(m_exampleSubsystem);
-    //return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
+    //return Autos.exampleAuto(m_exampleSubsystem);
+    return AutoBuilder.buildAuto(mChooser.getSelected());//mChooser.getSelected() will get the auto selected from smart dashboard
     //if you want hard coded auto do "AutoName"
-    Command autonomousCommand = new AutoTest(
-    m_shooter,
-    m_ArmPivotSubsystem,
-    m_intake,
-    m_shooterFeeder,
-    m_swerveBase,
-    m_lineBreak
-   );
-    return autonomousCommand;
+  //   Command autonomousCommand = new AutoTest(
+  //   m_shooter,
+  //   m_ArmPivotSubsystem,
+  //   m_intake,
+  //   m_shooterFeeder,
+  //   m_swerveBase,
+  //   m_lineBreak
+  //  );
+
+    //return autonomousCommand;
   }
 
   public SwerveBase getSwerveSubsytem() {
@@ -517,15 +597,21 @@ public class RobotContainer {
   public ShooterSubsystem getShooterSubsystem() {
     return m_shooter;
   }
+
   
   //Take what mChooser says and makes isRed true or false only work beacuse method is called in robot(telop perodic)
   public void SmartDashboardtoCommands() {
-  if (mChooser6.getSelected() == "Blue") {
-    isRed = false;
+  // if (mChooser6.getSelected() == "Blue") {
+  //  isRed = false;
+  // }
+  // if (mChooser6.getSelected() == "Red"){
+  //  isRed = true;
+  //   }
+
+  if(mChooser.getSelected() == "Test Aim"){
+
+    new RunCommand(() -> m_selfDriving.setTargetPose(4));
   }
-  if (mChooser6.getSelected() == "Red"){
-   isRed = true;
-    }
 
   if (mChooser1.getSelected() == "No") {
     Camera1_InAuto = false;

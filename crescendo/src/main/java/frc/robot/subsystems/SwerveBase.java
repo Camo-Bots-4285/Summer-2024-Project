@@ -11,8 +11,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -33,10 +31,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-
 import java.sql.Driver;
-
-import org.ejml.equation.Variable;
 
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -47,6 +42,8 @@ import edu.wpi.first.wpilibj.RobotBase;
 // import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.robot.Constants;
 
 
@@ -56,22 +53,25 @@ public class SwerveBase extends SubsystemBase {
   private final AHRS navX;
   private Pigeon2Configuration pigeonConfig;
   private double oldPigeonYaw = 0.0;
+  public static boolean  isFieldRelative1 = true;
 
+
+  public static boolean AllowMainDriving = true;
+  public static boolean GettingNote = false;
 public static double translation;
 public static double rotation;
 public static boolean needMoreAmps;
 public static int SwerveAmps;
 
-public static double currentPoseX; 
+public static double currentPoseX;
 public static double currentPoseY;
-public static double currentPoseRotation; 
+public static double currentPoseRotation;
+
 //Checks if setNeedMoreAmps is True of false and change need more
 //amps based on if the command is being called
 public void setNeedMoreAmps(boolean set) {
     needMoreAmps = set;
   }
-
-
 
 public static boolean FasterSwerve;
 public void setFasterSwerve(boolean set) {
@@ -131,21 +131,20 @@ public void setSlowerSwerve(boolean set) {
             this::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::robotRelativeDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5.0, 0.0, 0.0),// 5.75
-                    new PIDConstants(5.0, 0.0, 0.0),//3
+                    new PIDConstants(2.525, 0.0, 0.0),//Translational   2.525
+                    new PIDConstants(3.15, 0.0, 0.0),//Rotational  3.173
                     6.03504, //5.7912  module speed, in m/s
                     driveBaseRadius, // Drive base radius in meters. Distance from robot center to furthest module.
-                    new ReplanningConfig(false , true, 0.5 , 0.45) // 0.5,0.25 0.6 to high 0.4 too low 0.5 nice Default path replanning config. See the API for the options here
-                   
+                    new ReplanningConfig(false , true, 20 , 20) // 0.5,0.25 0.6 to high 0.4 too low 0.5 nice Default path replanning config. See the API for the options here   
             ),
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
               // This will flip the path being followed to the red side of the field.
               // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-              Boolean alliance = RobotContainer.isRed;
+              Boolean alliance = Constants.isRed;
               if (alliance) {
-                return alliance == RobotContainer.isRed;
+                return alliance == Constants.isRed;
               }
               return false;
             },
@@ -173,8 +172,8 @@ public void setSlowerSwerve(boolean set) {
   private static final double rearRightAngleOffset = Units.degreesToRadians(249.87);//132.45
 
   public static Pose2d m_pose = new Pose2d(0, 0, new Rotation2d());
-  public static double SCALE_X = -1/0.9;
-  public static double SCALE_Y = -1/0.9;
+  private final double SCALE_X = -1/0.9;
+  private final double SCALE_Y = -1/0.9;
 
   /**
    * SwerveModule objects
@@ -199,9 +198,10 @@ public void setSlowerSwerve(boolean set) {
       frontRightAngleOffset,
       this);
 
-  public SwerveModule getFrontRight() {
-    return frontRight;
-  }
+      //what does this do. Do we need it?//From Cal
+  // public SwerveModule getFrontRight() {
+  //   return frontRight;
+  // }
 
   private final SwerveModule rearLeft = new SwerveModule(
       SwerveConstants.rearLeftDriveMotorId,
@@ -228,6 +228,7 @@ public void setSlowerSwerve(boolean set) {
       getModulePositions(), new Pose2d());
   private boolean needPigeonReset = false;
 
+  //Is used to help zero pigeon when method is called
   public void setNeedPigeonReset(boolean set) {
     needPigeonReset = set;
   }
@@ -247,12 +248,7 @@ public void setSlowerSwerve(boolean set) {
     currentPoseY = getPose().getY();
     currentPoseRotation = getPose().getRotation().getDegrees() + 180;
 
-    //System.out.println(pigeonSensor.getYaw());
-    //System.out.println(getPose().getX());
-    //System.out.println(getPose().getY());
-    //System.out.println(getPose().getRotation().getDegrees()+180);
-   //System.out.println(getPose());
-    //System.out.println(SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    //System.out.println(AllowMainDriving);
     //System.out.println(SwerveBase.NoteRotation.calculate(NoteDetection.x, 0.0));
     //System.out.println(NoteTranslation.calculate(NoteDetection.y, 0.0));
     // update the odometry every 20ms
@@ -275,29 +271,17 @@ public void setSlowerSwerve(boolean set) {
     SmartDashboard.putString("RR Wheel Angle", rearRight.getCanCoderAngle().toString());
 
 
-    //Check if need more amps is true.
-    //If it is it will increase smart limiter in SwerveModule
-if (needMoreAmps == false) {
-       // System.out.println("Amps are 2");
-        SwerveAmps = 45;//Value of swerveAmps without button pressed
-      }
-if (needMoreAmps == true) {
-     // System.out.println("Amps are 50");
-      SwerveAmps = 55;//Value of swerveAmps with button pressed
-    }
-
-
     if (FasterSwerve == true) {
        //System.out.println("Swerve is Fast");
        SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 5.5;//Faster swerve speed
        }
     if (SlowerSwerve == true) {
       //System.out.println("Swerve is Slow");
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.5;//Slower swerve speed 0.125
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = 0.125;//Slower swerve speed
     }
     if(FasterSwerve == false & SlowerSwerve == false){
      //System.out.println("Swerve is Normal 0.5");
-      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond =1.0;//Normal swerve speed 0.25
+      SwerveConstants.kTeleDriveMaxSpeedMetersPerSecond = .5;//Normal swerve speed
       
     }
  }
@@ -313,7 +297,7 @@ if (needMoreAmps == true) {
    */
   
   public void drive(double forward, double strafe, double rotation, boolean isFieldRelative) {
-  
+
     /**
      * ChassisSpeeds object to represent the overall state of the robot
      * ChassisSpeeds takes a forward and sideways linear value and a rotational
@@ -323,29 +307,35 @@ if (needMoreAmps == true) {
      * parameter
      */
 
-    if (!isFieldRelative) {
-      if (!needPigeonReset) {
-        needPigeonReset = true;
-        oldPigeonYaw = pigeonSensor.getYaw();
-      }
 
-      zeroPigeon();
-    }
-    else if (needPigeonReset) {
+    // this is where feild relitive is activated was changed when trying to fix the pigeon yaw not going back to normal after
+       if (needPigeonReset) {
       needPigeonReset = false;
       pigeonSensor.setYaw(oldPigeonYaw);
+      isFieldRelative1 = true;
     }
-
-
+     if (isFieldRelative == false) {
+      // if (!needPigeonReset) {
+      //   needPigeonReset = true;
+      //   //oldPigeonYaw = pigeonSensor.getYaw();
+      // }
+    // The problem with constently zeroing the sencor is if it spins when in robot centric then it will not be accurate when back
+    //in robot centric
+      //zeroPigeon();
+      isFieldRelative1 = false;
+    }
+     if(isFieldRelative == true){
+      isFieldRelative1 = true;
+    }
 
 
     ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-      forward, strafe, rotation, getHeading()
+      forward, strafe, rotation, getHeadingDrive()
     );
 
    
 
-    // new ChassisSpeeds(forward, strafe, rotation)
+    // new ChassisSpeeds(forward, strafe, rotation);
 
     // use kinematics (wheel placements) to convert overall robot state to array of
     // individual module states
@@ -360,15 +350,16 @@ if (needMoreAmps == true) {
     final var translation = new Translation2d(m_pose.getX() * SCALE_X, m_pose.getY() * SCALE_Y);
     final var rotation = m_pose.getRotation().rotateBy(new Rotation2d(0));
     return new Pose2d(translation.getX(), translation.getY(), rotation);
-
-    //currentPoseX = m_pose.getX() * SCALE_X;
-    //currentPoseY = m_pose.getY() * SCALE_Y;
   }
 
   public Rotation2d getGyroscopeRotation() {
+
     return Rotation2d.fromDegrees(pigeonSensor.getCompassHeading());
+    
   }
 
+  //This was create by Spencor Smith to help on auto balance 2023 it work but has been commented out by Cal in the summer of 2024
+  //trying to his the drive problem
   // public void drive(double forward, double strafe, double rotation, boolean isFieldRelative, boolean isAutoBalancing) {
 
   //   /**
@@ -482,9 +473,24 @@ if (needMoreAmps == true) {
 
   // get the current heading of the robot based on the gyro
   public Rotation2d getHeading() {
+
+   // if(isFieldRelative1 == true){
     return Rotation2d.fromDegrees(pigeonSensor.getYaw() + 180);
-  
+    // }
+    // else{
+    //   return Rotation2d.fromDegrees(0.0);
+    // }
     // navX: return Rotation2d.fromDegrees(-navX.getYaw() + 90);
+  }
+  //this is a duplicate of getHeading but is use to make the robot drive in robot centic
+  //while evrything else like camera and odomatery tracking till use the normal pigeon heading
+  public Rotation2d getHeadingDrive() {
+     if(isFieldRelative1 == true){
+    return Rotation2d.fromDegrees(pigeonSensor.getYaw() + 180);
+    }
+    else{
+      return Rotation2d.fromDegrees(180);
+    }
   }
 
   public Rotation2d getAngleToSpeaker(){

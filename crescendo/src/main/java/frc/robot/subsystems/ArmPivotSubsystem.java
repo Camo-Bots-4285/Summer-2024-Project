@@ -35,21 +35,24 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
+import frc.robot.commands.Swerve.MoveToNoteByPose;
 
 public class ArmPivotSubsystem extends SubsystemBase {
   private final AprilTagFieldLayout field;
   private SwerveBase mSwerveBase; //private final SwerveBase mSwerveBase;  //
   private Pose2d speakerPose;
+  private Pose2d notePose;
   private Pose2d ampPose;
   private Pose2d humanfeederPose;
   private Pose2d linePose;
-  private double notePose;
+  
   /** Pivots the arm. */
 
   private RelativeEncoder arm_pivot_encoder;
 
   // private PIDController arm_pid_controller;
   private double desired_location;
+  public static double DesiredLocation;
 
   //private static final int deviceID = 1;
   private CANSparkMax m_armMotorPivot1;
@@ -59,8 +62,11 @@ public class ArmPivotSubsystem extends SubsystemBase {
   // private RelativeEncoder m_encoder;
   public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, maxVel, minVel, maxAcc, allowedErr;
 
+public static double ArmAngle;
+public static double processVariable;
+
+
   public static InterpolatingDoubleTreeMap angleTreeMap;
- 
 
   private int active_mode;
   
@@ -327,19 +333,26 @@ public class ArmPivotSubsystem extends SubsystemBase {
 
 
   public void setGoalPose() {
-    speakerPose = RobotContainer.isRed == true ? field.getTagPose(4).get().toPose2d() : field.getTagPose(7).get().toPose2d();
+    speakerPose = Constants.isRed == true ? field.getTagPose(4).get().toPose2d() : field.getTagPose(7).get().toPose2d();
   }
 
   public Pose2d getSpeakerPose(){
     return speakerPose;
   }
+  
+  public void setNotePose() {
+    notePose =  MoveToNoteByPose.NOTE_POSE;
+  }
+  public Pose2d getNotePose(){
+    return notePose;
+  }  
 
   public void setAmpPose(){
-    ampPose = RobotContainer.isRed == true ? field.getTagPose(5).get().toPose2d() : field.getTagPose(6).get().toPose2d();
+    ampPose = Constants.isRed == true ? field.getTagPose(5).get().toPose2d() : field.getTagPose(6).get().toPose2d();
   }
 
   public Rotation2d getAmpAngle(){
-    return RobotContainer.isRed == true ? Rotation2d.fromDegrees(-270) : Rotation2d.fromDegrees(270);
+    return Constants.isRed == true ? Rotation2d.fromDegrees(-270) : Rotation2d.fromDegrees(270);
   }
 
   public Pose2d getAmpPose(){
@@ -347,11 +360,11 @@ public class ArmPivotSubsystem extends SubsystemBase {
   }
 
   public void setHumanFeederPose(){
-    humanfeederPose = RobotContainer.isRed == true ? field.getTagPose(9).get().toPose2d() : field.getTagPose(1).get().toPose2d();
+    humanfeederPose = Constants.isRed == true ? field.getTagPose(9).get().toPose2d() : field.getTagPose(1).get().toPose2d();
   }
 
   public Rotation2d getHumanFeederAngle(){
-    return RobotContainer.isRed == true ? Rotation2d.fromDegrees(45) : Rotation2d.fromDegrees(135);
+    return Constants.isRed == true ? Rotation2d.fromDegrees(45) : Rotation2d.fromDegrees(135);
   }
 
   public Pose2d getHumanFeederPose(){
@@ -500,8 +513,6 @@ public class ArmPivotSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-   
     // // This method will be called once per scheduler run
     // System.out.println(arm_pivot_encoder.isConnected() + " get" + arm_pivot_encoder.get() + " getDist " + arm_pivot_encoder.getDistance() + " getAbsPos" + arm_pivot_encoder.getAbsolutePosition() + " getPosOffset " + arm_pivot_encoder.getPositionOffset());
     
@@ -574,9 +585,11 @@ public class ArmPivotSubsystem extends SubsystemBase {
     if((maxA != maxAcc)) { arm_pid_Controller.setSmartMotionMaxAccel(maxA,0); maxAcc = maxA; }
     if((allE != allowedErr)) { arm_pid_Controller.setSmartMotionAllowedClosedLoopError(allE,0); allowedErr = allE; }
 
-    double setPoint, processVariable;
+    //double setPoint, processVariable;
+    ArmAngle = processVariable;
+    DesiredLocation = desired_location;
 
-    setPoint = SmartDashboard.getNumber("Set Position", 0);
+    //setPoint = SmartDashboard.getNumber("Set Position", 0);
       /**
        * As with other PID modes, Smart Motion is set by calling the
        * setReference method on an existing pid object and setting

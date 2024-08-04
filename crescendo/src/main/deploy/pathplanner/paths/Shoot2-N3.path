@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.43,
-        "y": 5.55
+        "x": 1.3771774811958186,
+        "y": 5.557362183607978
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6573717453547023,
-        "y": 4.782897522614968
+        "x": 1.6045492265505221,
+        "y": 4.790259706222947
       },
       "isLocked": false,
       "linkedName": "B"
@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 250.0,
-    "maxAngularAcceleration": 200.0
+    "maxAngularAcceleration": 250.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "B Paths ",
   "previewStartingState": {
     "rotation": 180.0,
     "velocity": 0

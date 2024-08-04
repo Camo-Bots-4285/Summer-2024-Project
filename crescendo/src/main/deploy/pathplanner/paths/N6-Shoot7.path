@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.3,
-        "y": 4.1
+        "x": 8.289756056946795,
+        "y": 4.1046482092964185
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.041546434731826,
-        "y": 4.5043882961875195
+        "x": 7.03130249167862,
+        "y": 4.509036505483938
       },
       "isLocked": false,
       "linkedName": "N6"
@@ -32,10 +32,10 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 2.75,
+    "maxVelocity": 3.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 250.0,
-    "maxAngularAcceleration": 200.0
+    "maxAngularAcceleration": 250.0
   },
   "goalEndState": {
     "velocity": 0,
@@ -43,7 +43,7 @@
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Shoot Places",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

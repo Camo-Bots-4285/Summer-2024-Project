@@ -2,16 +2,24 @@
   "robotWidth": 0.9,
   "robotLength": 0.9,
   "holonomicMode": true,
-  "pathFolders": [],
+  "pathFolders": [
+    "A Paths",
+    "B Paths ",
+    "BlackLine Paths",
+    "C Paths",
+    "Random Paths",
+    "Test Paths",
+    "Shoot Places"
+  ],
   "autoFolders": [
     "A Autos",
     "B Autos",
     "C Autos",
     "Tests"
   ],
-  "defaultMaxVel": 4.0,
-  "defaultMaxAccel": 2.75,
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 250.0,
-  "defaultMaxAngAccel": 200.0,
+  "defaultMaxAngAccel": 250.0,
   "maxModuleSpeed": 5.5
 }

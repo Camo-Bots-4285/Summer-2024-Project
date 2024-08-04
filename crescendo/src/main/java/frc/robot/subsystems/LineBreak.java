@@ -10,13 +10,16 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LineBreakConstants;
+import frc.robot.commands.Hybrid.LineBreakArmPivot.ReadyToShoot;
 
 
 public class LineBreak extends SubsystemBase {
 
       public static boolean resting_bottom_bitch_state;
       public static boolean top_toe_hoe_state;
-      public static boolean HasNote;
+      public static boolean HasNote1;
+      public static boolean HasNote2;
+
       
       DigitalInput bottom_sensor = new DigitalInput(LineBreakConstants.DIO_BOTTOM_SENSOR);  
       DigitalInput top_sensor = new DigitalInput(LineBreakConstants.DIO_TOP_SENSOR);
@@ -42,16 +45,24 @@ public class LineBreak extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //System.out.println(LineBreak.HasNote);
+    //System.out.println(LineBreak.HasNote1);
     //System.out.println(LineBreakConstants.LINEBREAK_BLOCKED);
     //System.out.println(LineBreakConstants.LINEBREAK_OPEN);
     //System.out.println(top_sensor.get());
     //This method will be called once per scheduler run
-    if (bottom_sensor.get() == true){
-      HasNote = true;
+    if (bottom_sensor.get() == false){
+      HasNote1 = true;
   }
       else{
-      HasNote = false;
+      HasNote1 = false;
+  }   
+
+  
+      if (top_sensor.get() == false){
+      HasNote2 = true;
+  }
+      else{
+      HasNote2 = false;
   }   
   }
 
