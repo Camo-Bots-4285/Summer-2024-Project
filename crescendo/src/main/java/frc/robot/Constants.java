@@ -41,7 +41,7 @@ import frc.robot.subsystems.SwerveBase;
  * constants are needed, to reduce verbosity.
  */
  public final class Constants {
-  public static boolean isRed= true;
+  public static boolean isRed = true;
 
   public static final Mode currentMode = Mode.REAL;
 
